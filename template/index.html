@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Cost Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        h2 {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            opacity: 0.7;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            margin-left: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            background: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            background: #00d2ff;
+            background: -webkit-linear-gradient(to right, #3a7bd5, #00d2ff);
+            background: linear-gradient(to right, #3a7bd5, #00d2ff);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.4s;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .price {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .input-row { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Insurance Estimator</h2>
+        <p class="subtitle">Machine Learning Based Cost Prediction</p>
+
+        <form action="/predict" method="POST">
+            <div class="input-row">
+                <div class="field">
+                    <label>Age</label>
+                    <input type="number" name="age" placeholder="Ex: 25" required min="18" max="100">
+                </div>
+                <div class="field">
+                    <label>BMI</label>
+                    <input type="number" name="bmi" step="0.1" placeholder="Ex: 28.4" required>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="field">
+                    <label>Children</label>
+                    <input type="number" name="children" placeholder="0-5" required min="0" max="10">
+                </div>
+                <div class="field">
+                    <label>Sex</label>
+                    <select name="sex" required>
+                        <option value="1">Male</option>
+                        <option value="0">Female</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="field">
+                    <label>Smoker Status</label>
+                    <select name="smoker" required>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Region</label>
+                    <select name="region" required>
+                        <option value="northeast">Northeast</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="southeast">Southeast</option>
+                        <option value="southwest">Southwest</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Calculate Cost</button>
+        </form>
+
+        {% if prediction_text %}
+        <div class="result-container">
+            <p style="font-size: 0.9rem; opacity: 0.8;">Estimated Annual Charges:</p>
+            <span class="price">{{ prediction_text }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
